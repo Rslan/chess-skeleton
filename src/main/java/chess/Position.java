@@ -1,9 +1,11 @@
 package chess;
 
+import java.io.Serializable;
+
 /**
  * Describes a position on the Chess Board
  */
-public class Position {
+public class Position implements Serializable {
     public static final int MIN_ROW = 1;
     public static final int MAX_ROW = 8;
     public static final char MIN_COLUMN = 'a';
@@ -36,6 +38,15 @@ public class Position {
 
     public char getColumn() {
         return column;
+    }
+
+    public static boolean isOnBoard(char column, int row){
+        if(column <= Position.MAX_COLUMN && column >= Position.MIN_COLUMN){
+            if(row <= Position.MAX_ROW && row >= Position.MIN_ROW){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

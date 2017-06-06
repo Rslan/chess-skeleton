@@ -3,6 +3,9 @@ package chess;
 import chess.pieces.Piece;
 
 import java.io.*;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * This class provides the basic CLI interface to the Chess game.
@@ -23,6 +26,7 @@ public class CLI {
 
     /**
      * Write the string to the output
+     *
      * @param str The string to write
      */
     private void writeOutput(String str) {
@@ -31,6 +35,7 @@ public class CLI {
 
     /**
      * Retrieve a string from the console, returning after the user hits the 'Return' key.
+     *
      * @return The input from the user, or an empty-length string if they did not type anything.
      */
     private String getInput() {
@@ -48,6 +53,7 @@ public class CLI {
 
         while (true) {
             showBoard();
+
             writeOutput(gameState.getCurrentPlayer() + "'s Move");
 
             String input = getInput();
@@ -64,12 +70,55 @@ public class CLI {
                 } else if (input.equals("board")) {
                     writeOutput("Current Game:");
                 } else if (input.equals("list")) {
-                    writeOutput("====> List Is Not Implemented (yet) <====");
+                    writeAllPossibleMovements();
                 } else if (input.startsWith("move")) {
-                    writeOutput("====> Move Is Not Implemented (yet) <====");
+                    MoveResult moveResult = move(input);
+                    if (moveResult == MoveResult.CHECK_MATE) {
+                        writeOutput("The game is over.  Congrats to " + gameState.getCurrentPlayer());
+                    } else if (moveResult == MoveResult.DRAW) {
+                        writeOutput("The game is over. Draw");
+                    } else if (moveResult == MoveResult.CHECK) {
+                        writeOutput("Check");
+                    } else if (moveResult == MoveResult.ILLEGAL) {
+                        writeOutput("Illegal movement");
+                    }
                 } else {
                     writeOutput("I didn't understand that.  Type 'help' for a list of commands.");
                 }
+            }
+        }
+    }
+
+    private MoveResult move(String input) {
+        final int COMMAND_PARAMETERS_NUMBER = 3;
+
+        String[] splits = input.split(" ");
+
+        boolean isCommandLengthValid = (splits.length == COMMAND_PARAMETERS_NUMBER);
+        if (!isCommandLengthValid) {
+            writeInvalidCommand();
+        }
+        String posFrom = splits[1];
+        String posTo = splits[2];
+        String pattern = "[a-h][1-8]";
+        boolean isCommandMatchesValid = Pattern.matches(pattern, splits[1])
+                && Pattern.matches(pattern, splits[2]);
+        if (!isCommandMatchesValid) {
+            writeInvalidCommand();
+        }
+
+        return gameState.movePiece(posFrom, posTo);
+    }
+
+    private void writeInvalidCommand() {
+        writeOutput("Invalid command. Command format is 'move e2 e4'.");
+    }
+
+    private void writeAllPossibleMovements() {
+        for (Map.Entry<Position, List<Position>> movement : gameState.getPossibleMovements().entrySet()) {
+            Position from = movement.getKey();
+            for (Position to : movement.getValue()) {
+                writeOutput(from + " " + to);
             }
         }
     }
