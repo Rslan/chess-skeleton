@@ -175,4 +175,21 @@ public class GameStateTest {
         assertEquals(MoveResult.CHECK_MATE, state.movePiece("d8", "h4"));
         assertTrue(state.isGameOver());
     }
+
+    @Test
+    public void testCheck() {
+        state.reset();
+
+        state.movePiece("c2", "c3");
+        state.movePiece("d7", "d6");
+        MoveResult actual = state.movePiece("d1", "a4");
+
+        TestUtil.showBoard(state);
+        
+        assertEquals(MoveResult.OK, actual);
+
+        TestUtil.showBoard(state);
+
+        assertFalse(state.isGameOver());
+    }
 }

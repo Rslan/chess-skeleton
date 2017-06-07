@@ -150,11 +150,16 @@ public class GameState implements Serializable {
     }
 
     public boolean isMyKingUnderAttackAfter(Position from, Position to) {
+        return isKingUnderAttackAfter(currentPlayer, from, to);
+    }
+
+    public boolean isKingUnderAttackAfter(Player player, Position from, Position to) {
         GameState state = deepClone(this);
-        state.currentPlayer = state.getOpponent();
+        state.setCurrentPlayer(getOpponent(player));
         Piece fromPiece = state.positionToPieceMap.remove(from);
         state.positionToPieceMap.put(to, fromPiece);
-        return state.isKingUnderAttack(currentPlayer);
+        return state.isKingUnderAttack(player);
+
     }
 
     public boolean isKingUnderAttack(Player player) {
