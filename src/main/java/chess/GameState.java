@@ -97,7 +97,7 @@ public class GameState implements Serializable {
     private List<Position> getValidMovementsWithoutCheck(Player player, Piece currentPiece, Position fromPos) {
         List<Position> possibleMoves = currentPiece.getValidMovements(this, fromPos, player);
         return possibleMoves.stream()
-                .filter(toPos -> !isKingUnderAttack(player))
+                .filter(toPos -> !isKingUnderAttackAfter(player, fromPos, toPos))
                 .collect(Collectors.toList());
     }
 

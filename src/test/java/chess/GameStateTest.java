@@ -186,7 +186,7 @@ public class GameStateTest {
 
         TestUtil.showBoard(state);
         
-        assertEquals(MoveResult.OK, actual);
+        assertEquals(MoveResult.CHECK, actual);
 
         TestUtil.showBoard(state);
 
