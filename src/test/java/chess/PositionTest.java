@@ -2,6 +2,7 @@ package chess;
 
 import org.junit.Test;
 
+import static chess.Position.getNewPosition;
 import static junit.framework.Assert.*;
 
 /**
@@ -11,7 +12,7 @@ public class PositionTest {
 
     @Test
     public void testStringParsingConstructor() {
-        Position pos = new Position("d5");
+        Position pos = getNewPosition("d5");
 
         assertEquals("The column should be 'd'", 'd', pos.getColumn());
         assertEquals("The row should be 5", 5, pos.getRow());
@@ -19,8 +20,8 @@ public class PositionTest {
 
     @Test
     public void testPositionEquality() {
-        Position one = new Position('a', 1);
-        Position other = new Position('a', 1);
+        Position one = getNewPosition('a', 1);
+        Position other = getNewPosition('a', 1);
 
         assertEquals("The positions should equal each other", one, other);
     }

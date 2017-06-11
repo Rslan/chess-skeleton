@@ -1,6 +1,8 @@
 package chess.pieces;
 
 import chess.Player;
+import chess.moves.MoveDeterminant;
+import chess.moves.RookMoveStrategy;
 
 /**
  * The 'Rook' class
@@ -8,7 +10,7 @@ import chess.Player;
 public class Rook extends Piece {
 
     public Rook(Player owner) {
-        super(owner);
+        super(owner, new RookMoveStrategy(new MoveDeterminant()));
     }
 
     @Override

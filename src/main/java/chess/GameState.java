@@ -1,10 +1,15 @@
 package chess;
 
 
+import chess.moves.Move;
 import chess.pieces.*;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
+
+import static chess.Position.getNewPosition;
 
 /**
  * Class that represents the current state of the game.  Basically, what pieces are in which positions on the
@@ -34,44 +39,63 @@ public class GameState {
     }
 
     /**
+     * Gets a rival of the current player of the game.
+     *
+     * @return a rival of the current player
+     */
+    public Player getRival() {
+        return getRival(currentPlayer);
+    }
+
+    /**
+     * Gets a rival of the specified player.
+     *
+     * @param player a player whose rival is to be calculated
+     * @return a rival of the specified player
+     */
+    public Player getRival(Player player) {
+        return player == Player.White ? Player.Black : Player.White;
+    }
+
+    /**
      * Call to initialize the game state into the starting positions
      */
     public void reset() {
         // White Pieces
-        placePiece(new Rook(Player.White), new Position("a1"));
-        placePiece(new Knight(Player.White), new Position("b1"));
-        placePiece(new Bishop(Player.White), new Position("c1"));
-        placePiece(new Queen(Player.White), new Position("d1"));
-        placePiece(new King(Player.White), new Position("e1"));
-        placePiece(new Bishop(Player.White), new Position("f1"));
-        placePiece(new Knight(Player.White), new Position("g1"));
-        placePiece(new Rook(Player.White), new Position("h1"));
-        placePiece(new Pawn(Player.White), new Position("a2"));
-        placePiece(new Pawn(Player.White), new Position("b2"));
-        placePiece(new Pawn(Player.White), new Position("c2"));
-        placePiece(new Pawn(Player.White), new Position("d2"));
-        placePiece(new Pawn(Player.White), new Position("e2"));
-        placePiece(new Pawn(Player.White), new Position("f2"));
-        placePiece(new Pawn(Player.White), new Position("g2"));
-        placePiece(new Pawn(Player.White), new Position("h2"));
+        placePiece(new Rook(Player.White), getNewPosition("a1"));
+        placePiece(new Knight(Player.White), getNewPosition("b1"));
+        placePiece(new Bishop(Player.White), getNewPosition("c1"));
+        placePiece(new Queen(Player.White), getNewPosition("d1"));
+        placePiece(new King(Player.White), getNewPosition("e1"));
+        placePiece(new Bishop(Player.White), getNewPosition("f1"));
+        placePiece(new Knight(Player.White), getNewPosition("g1"));
+        placePiece(new Rook(Player.White), getNewPosition("h1"));
+        placePiece(new Pawn(Player.White), getNewPosition("a2"));
+        placePiece(new Pawn(Player.White), getNewPosition("b2"));
+        placePiece(new Pawn(Player.White), getNewPosition("c2"));
+        placePiece(new Pawn(Player.White), getNewPosition("d2"));
+        placePiece(new Pawn(Player.White), getNewPosition("e2"));
+        placePiece(new Pawn(Player.White), getNewPosition("f2"));
+        placePiece(new Pawn(Player.White), getNewPosition("g2"));
+        placePiece(new Pawn(Player.White), getNewPosition("h2"));
 
         // Black Pieces
-        placePiece(new Rook(Player.Black), new Position("a8"));
-        placePiece(new Knight(Player.Black), new Position("b8"));
-        placePiece(new Bishop(Player.Black), new Position("c8"));
-        placePiece(new Queen(Player.Black), new Position("d8"));
-        placePiece(new King(Player.Black), new Position("e8"));
-        placePiece(new Bishop(Player.Black), new Position("f8"));
-        placePiece(new Knight(Player.Black), new Position("g8"));
-        placePiece(new Rook(Player.Black), new Position("h8"));
-        placePiece(new Pawn(Player.Black), new Position("a7"));
-        placePiece(new Pawn(Player.Black), new Position("b7"));
-        placePiece(new Pawn(Player.Black), new Position("c7"));
-        placePiece(new Pawn(Player.Black), new Position("d7"));
-        placePiece(new Pawn(Player.Black), new Position("e7"));
-        placePiece(new Pawn(Player.Black), new Position("f7"));
-        placePiece(new Pawn(Player.Black), new Position("g7"));
-        placePiece(new Pawn(Player.Black), new Position("h7"));
+        placePiece(new Rook(Player.Black), getNewPosition("a8"));
+        placePiece(new Knight(Player.Black), getNewPosition("b8"));
+        placePiece(new Bishop(Player.Black), getNewPosition("c8"));
+        placePiece(new Queen(Player.Black), getNewPosition("d8"));
+        placePiece(new King(Player.Black), getNewPosition("e8"));
+        placePiece(new Bishop(Player.Black), getNewPosition("f8"));
+        placePiece(new Knight(Player.Black), getNewPosition("g8"));
+        placePiece(new Rook(Player.Black), getNewPosition("h8"));
+        placePiece(new Pawn(Player.Black), getNewPosition("a7"));
+        placePiece(new Pawn(Player.Black), getNewPosition("b7"));
+        placePiece(new Pawn(Player.Black), getNewPosition("c7"));
+        placePiece(new Pawn(Player.Black), getNewPosition("d7"));
+        placePiece(new Pawn(Player.Black), getNewPosition("e7"));
+        placePiece(new Pawn(Player.Black), getNewPosition("f7"));
+        placePiece(new Pawn(Player.Black), getNewPosition("g7"));
+        placePiece(new Pawn(Player.Black), getNewPosition("h7"));
     }
 
     /**
@@ -80,7 +104,7 @@ public class GameState {
      * @return The piece at that position, or null if it does not exist.
      */
     public Piece getPieceAt(String colrow) {
-        Position position = new Position(colrow);
+        Position position = getNewPosition(colrow);
         return getPieceAt(position);
     }
 
@@ -94,6 +118,15 @@ public class GameState {
     }
 
     /**
+     * Get all the pieces with their positions on the board.
+     *
+     * @return a collection of pieces that are present on the board with their positions
+     */
+    public Map<Position, Piece> getPieces() {
+        return Collections.unmodifiableMap(positionToPieceMap);
+    }
+
+    /**
      * Method to place a piece at a given position
      * @param piece The piece to place
      * @param position The position
@@ -101,4 +134,51 @@ public class GameState {
     private void placePiece(Piece piece, Position position) {
         positionToPieceMap.put(position, piece);
     }
+
+    /**
+     * Performs a move of a piece according to the passed {@link Move} object and switches the current player.
+     *
+     * @param move contains an information about the piece move, i.e. start and finish positions
+     */
+    public void movePiece(Move move) {
+        movePieceVirtually(move, null);
+        currentPlayer = currentPlayer == Player.White ? Player.Black : Player.White;
+    }
+
+    /**
+     * Performs a virtual move of a piece according to the passed {@link Move} object without switching the current
+     * player and returns a piece that is captured in a result of the move so that it can be placed back when rolling
+     * back the move.
+     *
+     * @param move             contains an information about the piece move, i.e. start and finish positions
+     * @param pieceToPlaceBack a piece captured when the virtual move was played which now has to be placed back
+     * @return a piece captured in a result of the virtual move.
+     */
+    public Piece movePieceVirtually(Move move, Piece pieceToPlaceBack) {
+        Piece capturedPiece = positionToPieceMap.put(move.getTo(), positionToPieceMap.remove(move.getFrom()));
+        if (pieceToPlaceBack != null) {
+            positionToPieceMap.put(move.getFrom(), pieceToPlaceBack);
+        }
+        return capturedPiece;
+    }
+
+    /**
+     * Gets the current player's King position.
+     *
+     * @return a position of the King belonging to the current player
+     */
+    public Position getCurrentPlayerKingPosition() {
+        Optional<Map.Entry<Position, Piece>> kingsPosition =
+                positionToPieceMap.entrySet()
+                                  .stream()
+                                  .filter(pieceAtPosition -> pieceAtPosition.getValue().getOwner() == currentPlayer)
+                                  .filter(pieceAtPosition -> pieceAtPosition.getValue() instanceof King)
+                                  .findFirst();
+        return kingsPosition.map(Map.Entry::getKey).orElse(null);
+    }
+
+    protected void setPieces(Map<Position, Piece> pieces) {
+        positionToPieceMap = pieces;
+    }
+
 }

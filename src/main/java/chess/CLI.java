@@ -1,8 +1,12 @@
 package chess;
 
+import chess.moves.Move;
+import chess.moves.MoveDeterminant;
 import chess.pieces.Piece;
 
 import java.io.*;
+
+import static chess.Position.getNewPosition;
 
 /**
  * This class provides the basic CLI interface to the Chess game.
@@ -14,10 +18,12 @@ public class CLI {
     private final PrintStream outStream;
 
     private GameState gameState = null;
+    private final MoveDeterminant moveDeterminant;
 
     public CLI(InputStream inputStream, PrintStream outStream) {
         this.inReader = new BufferedReader(new InputStreamReader(inputStream));
         this.outStream = outStream;
+        moveDeterminant = new MoveDeterminant();
         writeOutput("Welcome to Chess!");
     }
 
@@ -48,6 +54,12 @@ public class CLI {
 
         while (true) {
             showBoard();
+
+            if (isGameOver()) {
+                writeOutput("The game is over. Congrats to " + gameState.getRival());
+                break;
+            }
+
             writeOutput(gameState.getCurrentPlayer() + "'s Move");
 
             String input = getInput();
@@ -64,13 +76,72 @@ public class CLI {
                 } else if (input.equals("board")) {
                     writeOutput("Current Game:");
                 } else if (input.equals("list")) {
-                    writeOutput("====> List Is Not Implemented (yet) <====");
+                    listPossibleMoves();
                 } else if (input.startsWith("move")) {
-                    writeOutput("====> Move Is Not Implemented (yet) <====");
+                    String[] cmd = input.split("\\s");
+                    if (cmd.length == 3) {
+                        doMove(cmd[1], cmd[2]);
+                    } else {
+                        writeOutput("Usage: move {from} {to}");
+                    }
                 } else {
                     writeOutput("I didn't understand that.  Type 'help' for a list of commands.");
                 }
             }
+        }
+    }
+
+    private boolean isGameOver() {
+        boolean checkMate;
+
+        if (isCheck()) {
+            checkMate = true;
+            for (Move move : moveDeterminant.getPossibleMoves(gameState)) {
+                Piece capturedPiece = null;
+                try {
+                    capturedPiece = gameState.movePieceVirtually(move, null);
+                    if (!isCheck()) {
+                        checkMate = false;
+                        break;
+                    }
+                } finally {
+                    gameState.movePieceVirtually(new Move(move.getTo(), move.getFrom()), capturedPiece);
+                }
+            }
+        } else {
+            checkMate = false;
+        }
+
+        return checkMate;
+    }
+
+    private boolean isCheck() {
+        return moveDeterminant.getPossibleMoves(gameState, gameState.getRival())
+                              .stream()
+                              .anyMatch(move -> move.getTo().equals(gameState.getCurrentPlayerKingPosition()));
+    }
+
+    private void doMove(String from, String to) {
+        try {
+            Position posFrom = getNewPosition(from);
+            Position posTo = getNewPosition(to);
+            Move move = new Move(posFrom, posTo);
+            if (moveDeterminant.getPossibleMoves(gameState).contains(move)) {
+                gameState.movePiece(move);
+            } else {
+                writeOutput("The specified move is not possible");
+            }
+        } catch (IllegalArgumentException e) {
+            writeOutput(e.getMessage());
+        }
+    }
+
+    private void listPossibleMoves() {
+        if (gameState != null) {
+            writeOutput(gameState.getCurrentPlayer() + "'s Possible Moves");
+            moveDeterminant.getPossibleMoves(gameState).forEach(move -> writeOutput(move.toString()));
+        } else {
+            writeOutput("Start a new game first");
         }
     }
 

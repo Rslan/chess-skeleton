@@ -1,11 +1,13 @@
 package chess;
 
+import chess.moves.Move;
 import chess.pieces.Piece;
 import chess.pieces.Queen;
 import chess.pieces.Rook;
 import org.junit.Before;
 import org.junit.Test;
 
+import static chess.Position.getNewPosition;
 import static junit.framework.Assert.*;
 
 /**
@@ -48,5 +50,42 @@ public class GameStateTest {
         Piece blackQueen = state.getPieceAt("d8");
         assertTrue("A queen should be at d8", blackQueen instanceof Queen);
         assertEquals("The queen at d8 should be owned by Black", Player.Black, blackQueen.getOwner());
+    }
+
+    @Test
+    public void getCurrentPlayerKingPosition() {
+        state.reset();
+
+        Position actualPosition = state.getCurrentPlayerKingPosition();
+
+        Position expected = getNewPosition("e1");
+        assertEquals(expected, actualPosition);
+    }
+
+    @Test
+    public void movePiece() {
+        state.reset();
+
+        Piece pawn = state.getPieceAt("a2");
+
+        state.movePiece(new Move(getNewPosition("a2"), getNewPosition("a4")));
+
+        assertEquals(pawn, state.getPieceAt("a4"));
+        assertNull(state.getPieceAt("a2"));
+        assertEquals(Player.Black, state.getCurrentPlayer());
+    }
+
+    @Test
+    public void getCurrentPlayersRival() {
+        state.reset();
+
+        assertEquals(Player.Black, state.getRival());
+    }
+
+    @Test
+    public void getBlackPlayerRival() {
+        state.reset();
+
+        assertEquals(Player.White, state.getRival(Player.Black));
     }
 }
